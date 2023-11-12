@@ -100,10 +100,10 @@ class ThreeJsScene {
   }
 
   init() {
-    const mesh = this.setMesh()
-    const camera = this.setCamera()
+    this.mesh = this.setMesh()
+    this.camera = this.setCamera()
     
-    this.scene.add(mesh, camera)
+    this.scene.add(this.mesh, this.camera)
     
     if ( this.pointLight ) {
       const pointLight = this.setPointLight()
@@ -115,17 +115,18 @@ class ThreeJsScene {
       this.scene.add(ambientLight)
     }
     
-    const renderer = this.setRender()
+    this.renderer = this.setRender()
 
     const assets = {
       canvas: this.canvas,
       scene: this.scene,
-      mesh,
-      camera,
-      renderer,
+      mesh: this.mesh,
+      camera: this.camera,
+      renderer: this.renderer,
     }
 
-    const animateScene = new AnimateScene(assets).init()
+    this.animateScene = new AnimateScene(assets).init()
+    return this
   }
 }
 

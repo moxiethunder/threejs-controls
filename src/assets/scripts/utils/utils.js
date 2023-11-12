@@ -21,3 +21,21 @@ export function getDeltaTime(time) {
 export function hasProperty(obj, prop) {
   return obj.hasOwnProperty(prop) ? true : false
 }
+
+
+export function createDomElement(config) {
+  const { type, props=null, classes=null } = config
+  const element = document.createElement(type)
+
+  if (props) {
+    Object.entries(props).forEach(([key, value]) => {
+      element.setAttribute(key, value)
+    })
+  }
+
+  if (classes) {
+    element.classList.add(...classes)
+  }
+
+  return element
+}

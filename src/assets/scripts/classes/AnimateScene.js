@@ -16,6 +16,7 @@ class AnimateScene {
       isRotating: true,
       rotationPosition: { x: 0, y: 0 },
       previousMousePosition: { x: 0, y: 0 },
+      defaultZoom: this.camera.position.z,
       clock: new THREE.Clock(),
     }
   }
@@ -42,6 +43,9 @@ class AnimateScene {
   }
 
   onMouseMove(e) {
+    if ( !this.vars.isRotating ) {
+      this.addEventListeners()
+    }
     if ( this.vars.isDragging ) {
       let deltaMove = {
         x: e.offsetX - this.vars.previousMousePosition.x,
@@ -62,6 +66,47 @@ class AnimateScene {
   onMouseUp() {
     this.vars.isDragging = false
     this.canvas.removeAttribute('data-grabbing')
+    this.restartAnimation()
+  }
+
+  startAnimation(e, el) {
+    if ( this.vars.isRotating ) return
+    this.addEventListeners()
+    this.canvas.setAttribute('data-playing', true)
+    this.restartAnimation()
+  }
+
+  stopAnimation(e, el) {
+    if ( !this.vars.isRotating ) return
+    this.removeEventListener('mouseup', this.boundOnMouseUp)
+    this.canvas.setAttribute('data-playing', false)
+    this.vars.isRotating = false
+  }
+
+  zoomCamera(e, el) {
+    const targ = e.target
+    const fn = targ.dataset.actionZoom
+    const pos = this.camera.position.z
+    
+    if ( fn === 'in' ) {
+      if ( pos >= 8 ) this.camera.position.z -= 1.25;
+      else if ( pos >= 4 ) this.camera.position.z -= 0.75;
+      else if ( pos > 1 ) this.camera.position.z -= 0.25
+    } else if ( fn === 'out' ) {
+      if ( pos >= 8 ) this.camera.position.z += 1.25
+      else if ( pos >= 4 ) this.camera.position.z += 0.75
+      else if ( pos < 4 ) this.camera.position.z += 0.25
+    }
+
+    this.canvas.setAttribute('data-zoom', pos)
+  }
+
+  resetCamera(e, el) {
+    this.camera.position.z = this.vars.defaultZoom
+    this.canvas.setAttribute('data-zoom', this.camera.position.z)
+  }
+
+  restartAnimation() {
     setTimeout(() => {
       this.vars.clock = new THREE.Clock()
       this.vars.rotationPosition = { x: this.mesh.rotation.x, y: this.mesh.rotation.y }
@@ -69,18 +114,26 @@ class AnimateScene {
     }, this.vars.DELAY)
   }
 
+  bindEventHandlers() {
+    this.boundOnMouseDown = this.onMouseDown.bind(this)
+    this.boundOnMouseMove = this.onMouseMove.bind(this)
+    this.boundOnMouseUp = this.onMouseUp.bind(this)
+  }
+  addEventListeners() {
+    this.canvas.addEventListener('mousedown', this.boundOnMouseDown)
+    this.canvas.addEventListener('mousemove', this.boundOnMouseMove)
+    this.canvas.addEventListener('mouseup', this.boundOnMouseUp)
+  }
+
+  removeEventListener(type, listener) {
+    this.canvas.removeEventListener(type, listener)
+  }
+
   init() {
-    const eventHandlers = {
-      mousedown: this.onMouseDown.bind(this),
-      mousemove: this.onMouseMove.bind(this),
-      mouseup: this.onMouseUp.bind(this),
-    }
-
-    Object.keys(eventHandlers).forEach(event => {
-      document.addEventListener(event, eventHandlers[event])
-    })
-
+    this.bindEventHandlers()
+    this.addEventListeners()
     this.animate()
+    return this
   }
 }
 

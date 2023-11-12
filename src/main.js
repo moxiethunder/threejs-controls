@@ -1,12 +1,11 @@
 import '@styles/main.scss'
 import ThreeJsScene from '@scripts/classes/ThreeJsScene.js'
-import controls from '@scripts/controls.js'
+import Controls from '@scripts/classes/Controls.js'
 
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight
 }
-
 const sceneConfig = {
   canvas: 'threejs-cube',
   background: 'white',
@@ -25,7 +24,7 @@ const sceneConfig = {
   },
   camera: {
     fov: 75,
-    position: [0, 0, 2],
+    position: [0, 0, 3],
     aspect: {
       width: sizes.width,
       height: sizes.height,
@@ -48,3 +47,15 @@ const sceneConfig = {
   }
 }
 const SCENE = new ThreeJsScene(sceneConfig).init()
+
+const controlConfig = {
+  scene: SCENE,
+  controls: {
+    play: true,
+    pause: true,
+    zoom: true,
+    reset: true,
+  },
+}
+
+const CONTROLS = new Controls(controlConfig).mount('animation-controls')
