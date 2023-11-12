@@ -7,3 +7,13 @@ export function getCanvas(value) {
 
   return allCanvases.find(canvas => canvas.dataset.render === value)
 }
+
+export function getDeltaTime(time) {
+  const currentTime = Date.now()
+  const deltaTime = currentTime - time
+
+  return {
+    currentTime,
+    deltaTime
+  }
+}
