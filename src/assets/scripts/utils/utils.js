@@ -17,3 +17,7 @@ export function getDeltaTime(time) {
     deltaTime
   }
 }
+
+export function hasProperty(obj, prop) {
+  return obj.hasOwnProperty(prop) ? true : false
+}
